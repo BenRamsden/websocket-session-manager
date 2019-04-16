@@ -43,6 +43,6 @@ class User {
     }
 }
 
-const user = new User('user1234')
-
-user.connect()
+module.exports = {
+    User
+}
