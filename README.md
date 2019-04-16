@@ -32,7 +32,9 @@ There are 3 components to the software:
     payload: "User has reached connection limit, no more connections allowed"
 }
 ```
-- Else server sets s.userId (authenticating the session), server responds
+- Else server sets s.userId (authenticating the session)
+- Server inserts / updates user document with connections += 1
+- Server responds
 ```$xslt
 {
     type:AUTHENTICATE_SUCCESS,
@@ -41,3 +43,21 @@ There are 3 components to the software:
 ```
 - Session is now authenticated
 
+#### Disconnection Flow
+
+- The frontend sends
+```$xslt
+{
+    type: "BYE",
+    payload: null
+}
+```
+- The server checks if the user is authenticated, if so decrements the connection count
+- The server responds
+```$xslt
+{ 
+    type:BYE_SUCCESS, 
+    payload:null 
+}
+```
+- The server closes the connection
