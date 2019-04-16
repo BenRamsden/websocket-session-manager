@@ -1,3 +1,4 @@
+const {handleEvent} = require("./controller")
 const {AUTHENTICATE, AUTHENTICATE_SUCCESS, HELLO} = require("../shared-helpers/constants")
 
 const path = require('path');
@@ -12,23 +13,19 @@ app.get('/', (req, res) => {
 
 app.ws('/', (s, req) => {
     console.log('websocket connection');
+
     s.send(JSON.stringify({
         type:HELLO,
         payload: 'message from server'
     }))
+
     s.on('message',message => {
         const event = toEvent(message)
         console.log(event.type,"event received from user",s.userId)
 
-        if(event.type===AUTHENTICATE) {
-            const userId = event.payload
-            s.userId = userId
-            s.send(JSON.stringify({
-                type:AUTHENTICATE_SUCCESS,
-                payload: 'user authenticated'
-            }))
-        }
+        handleEvent(event,s)
     })
+
     s.on('close',() => {
         console.log(`user ${s.userId} disconnected`)
     })
