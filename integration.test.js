@@ -2,6 +2,10 @@ const request = require('supertest')
 const app = require('./server/index')
 const { User } = require('./client/index')
 
+afterAll(() => {
+    app.close() //stop express listening
+})
+
 describe('Server http endpoint',() => {
     it('Details the server is web socket only',async () => {
         const response = await request(app)

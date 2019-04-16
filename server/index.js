@@ -50,10 +50,4 @@ app.ws('/', (s, req) => {
     })
 });
 
-const testingWithJest = process.env.JEST_WORKER_ID !== undefined
-
-if(!testingWithJest) {
-    app.listen(3000, () => console.log('listening on http://localhost:3000/'));
-}
-
-module.exports = app
+module.exports = app.listen(3000, () => console.log('listening on http://localhost:3000/'))
