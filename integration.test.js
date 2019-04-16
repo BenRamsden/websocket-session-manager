@@ -40,11 +40,19 @@ describe('Web socket application',() => {
 
         const user = new User(userId)
 
-        user.connect()
+        await new Promise((resolve,reject) => {
+            user.connect((err,res) => {
+                if(err) return reject(err)
+                return resolve(res)
+            })
+        })
 
-        await new Promise(resolve => setTimeout(resolve,100))
-
-        user.disconnect()
+        await new Promise((resolve,reject) => {
+            user.disconnect((err,res) => {
+                if(err) return reject(err)
+                return resolve(res)
+            })
+        })
 
         await new Promise(resolve => setTimeout(resolve,100))
 
