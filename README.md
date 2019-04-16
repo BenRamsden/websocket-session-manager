@@ -1,1 +1,43 @@
-"# websocket-session-manager" 
+### websocket-session-manager
+
+This software is a demo of WebSocket being used to manage the number of concurrent connections allowed by a single user.
+
+There are 3 components to the software:
+- Database - Powered by NeDB maintains a list of authenticated users, and their connections
+- Server - Powered by express-ws, exposes a websocket API for the user to authenticate to
+- Client - A simple User class that can connect and disconnect to the WebSocket backend. Each user can have multiple connections, and multiple users can be created very easily.
+
+#### Authentication Flow
+
+- Frontend connects to server
+- Server sends
+```$xslt
+{
+    type:"HELLO",
+    payload: 'message from server'
+}
+```
+- Client sends
+```$xslt
+{
+    type: "AUTHENTICATE",
+    payload: "my-unique-user-id"
+}
+```
+- Server checks in database if user has >= 3 connections
+- If the user does, server responds with
+```$xslt
+{
+    type: "AUTHENTICATE_FAILURE",
+    payload: "User has reached connection limit, no more connections allowed"
+}
+```
+- Else server sets s.userId (authenticating the session), server responds
+```$xslt
+{
+    type:AUTHENTICATE_SUCCESS,
+    payload: user
+}
+```
+- Session is now authenticated
+
