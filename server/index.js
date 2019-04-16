@@ -39,7 +39,17 @@ app.ws('/', (s, req) => {
     })
 
     s.on('close',() => {
-        //TODO: Would be best to handle unexpected connection close, without BYE
+        //Handle unexpected connection close, without BYE
+        if(s.loggedOut === undefined && s.userId !== undefined) {
+            decreaseConnections(s.userId)
+                .then(user => {
+                    console.log(`user ${s.userId} disconnected without bye, connections decreased to ${user.connections}`)
+                })
+                .catch(error => {
+                    console.log(`user ${s.userId} disconnected without bye, error decreasing connections`)
+                })
+        }
+
         console.log(`user ${s.userId} disconnected`)
     })
 });

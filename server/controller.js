@@ -27,6 +27,7 @@ const bye = async (event,s) => {
         await decreaseConnections(s.userId)
             .then(user => {
                 console.log(`user ${s.userId} said bye, connections decreased to ${user.connections}`)
+                s.loggedOut = true
             })
             .catch(error => {
                 console.log(`user ${s.userId} said bye, error decreasing connections`)

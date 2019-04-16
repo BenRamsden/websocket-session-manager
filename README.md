@@ -7,6 +7,12 @@ There are 3 components to the software:
 - Server - Powered by express-ws, exposes a websocket API for the user to authenticate to
 - Client - A simple User class that can connect and disconnect to the WebSocket backend. Each user can have multiple connections, and multiple users can be created very easily.
 
+#### Installation
+
+- Install node (v8.11.4 tested) and npm (v5.6.0 tested)
+- Run `npm install` to install dependencies
+- Run `npm test` in the root folder to validate
+
 #### Authentication Flow
 
 - Frontend connects to server
