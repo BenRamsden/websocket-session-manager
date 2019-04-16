@@ -45,8 +45,8 @@ describe('Web socket application',() => {
         expect(dbUser).toEqual(null)
 
         await new Promise((resolve,reject) => {
-            user.connect((res) => {
-                return resolve(res)
+            user.connect(() => {
+                return resolve()
             })
         })
 
@@ -55,14 +55,44 @@ describe('Web socket application',() => {
         expect(dbUser.connections).toEqual(1)
 
         await new Promise((resolve,reject) => {
-            user.disconnect((res) => {
-                return resolve(res)
+            user.disconnect(() => {
+                return resolve()
             })
         })
 
         dbUser = await findUser(userId)
         expect(dbUser.id).toEqual(userId)
         expect(dbUser.connections).toEqual(0)
+
+    })
+
+    it('Works for multiple users',async () => {
+
+        let users = []
+
+        for(let i = 0; i < 10; i++) {
+            users.push(new User(faker.random.uuid()))
+        }
+
+        const connectPromises = users.map(user => {
+            return new Promise(resolve => {
+                user.connect(() => {
+                    resolve()
+                })
+            })
+        })
+
+        await Promise.all(connectPromises)
+
+        const disconnectPromises = users.map(user => {
+            return new Promise(resolve => {
+                user.disconnect(() => {
+                    resolve()
+                })
+            })
+        })
+
+        await Promise.all(disconnectPromises)
 
     })
 })
