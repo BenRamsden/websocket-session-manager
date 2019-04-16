@@ -66,6 +66,37 @@ describe('Web socket application',() => {
 
     })
 
+    it('Caps connection number at 3',async () => {
+
+        const user = new User(faker.random.uuid())
+
+        for(let i = 0; i < 3; i++) {
+            await new Promise(resolve => {
+                user.connect(() => {
+                    resolve()
+                })
+            })
+        }
+
+        //Expect AUTHENTICATE_FAILURE to be returned
+        await expect(new Promise((resolve,reject) => {
+            user.connect((err) => {
+                if(err) return reject(err)
+                return resolve()
+            })
+        })).rejects.toEqual("User has reached connection limit, no more connections allowed")
+
+        //TODO: Would be better if this was 3, auto close connection if limit is reached
+        for(let i = 0; i < 4; i++) {
+            await new Promise(resolve => {
+                user.disconnect(() => {
+                    resolve()
+                })
+            })
+        }
+
+    })
+
     it('Works for multiple users',async () => {
 
         let users = []

@@ -1,4 +1,4 @@
-const {AUTHENTICATE, AUTHENTICATE_SUCCESS, BYE} = require("../shared-helpers/constants")
+const {AUTHENTICATE, AUTHENTICATE_SUCCESS, AUTHENTICATE_FAILURE, BYE} = require("../shared-helpers/constants")
 
 const WebSocket = require('ws');
 const { toEvent } = require('../shared-helpers/event')
@@ -26,6 +26,8 @@ class User {
 
             if(event.type===AUTHENTICATE_SUCCESS) {
                 callback() //callback for jest
+            } else if(event.type===AUTHENTICATE_FAILURE) {
+                callback(event.payload)
             }
         })
         this.connections.push(s)
