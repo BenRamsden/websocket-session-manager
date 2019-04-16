@@ -2,10 +2,14 @@ const { AUTHENTICATE, AUTHENTICATE_SUCCESS, AUTHENTICATE_FAILURE, ERROR } = requ
 const { increaseConnections, decreaseConnections } = require('./database')
 
 const authenticate = async (event,s) => {
-    s.userId = event.payload
+    const userId = event.payload
 
     try {
-        const user = await increaseConnections(s.userId)
+        const user = await increaseConnections(userId)
+
+        //Only authenticate socket once we know they can connect
+        s.userId = userId
+
         return {
             type:AUTHENTICATE_SUCCESS,
             payload: user

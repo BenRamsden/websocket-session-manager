@@ -1,5 +1,6 @@
 const {handleEvent} = require("./controller")
-const {AUTHENTICATE, AUTHENTICATE_SUCCESS, HELLO} = require("../shared-helpers/constants")
+const {HELLO} = require("../shared-helpers/constants")
+const { increaseConnections, decreaseConnections } = require('./database')
 
 const path = require('path');
 const app = require('express')();
@@ -34,7 +35,18 @@ app.ws('/', (s, req) => {
     })
 
     s.on('close',() => {
-        console.log(`user ${s.userId} disconnected`)
+        if(s.userId===undefined) {
+            console.log("unauthenticated user disconnected")
+        }
+
+        decreaseConnections(s.userId)
+            .then(user => {
+                console.log(`user ${s.userId} disconnected, connections decreased to ${user.connections}`)
+            })
+            .catch(error => {
+                console.log(`user ${s.userId} disconnected, error decreasing connections`)
+                console.error(error)
+            })
     })
 });
 
