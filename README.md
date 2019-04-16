@@ -13,6 +13,14 @@ There are 3 components to the software:
 - Run `npm install` to install dependencies
 - Run `npm test` in the root folder to validate
 
+#### Manually test the application
+
+- Run `node server` in terminal 1
+- Run `node client` in terminal 2 (notice connections = 1)
+- Run `node client` in terminal 3 (notice connections = 2)
+- Run `node client` in terminal 4 (notice connections = 3)
+- Run `node client` in terminal 5 (notice connection is disallowed)
+
 #### Authentication Flow
 
 - Frontend connects to server

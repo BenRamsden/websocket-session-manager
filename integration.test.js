@@ -1,6 +1,6 @@
 const request = require('supertest')
 const app = require('./server/index')
-const { User } = require('./client/index')
+const { User } = require('./client/userClass')
 const WebSocket = require('ws');
 const faker = require('faker')
 const { findUser } = require('./server/database')
