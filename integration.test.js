@@ -2,6 +2,7 @@ const request = require('supertest')
 const app = require('./server/index')
 const { User } = require('./client/index')
 const WebSocket = require('ws');
+const faker = require('faker')
 
 afterAll(() => {
     app.close() //stop express listening
@@ -31,5 +32,21 @@ describe('Web socket application',() => {
                 done(null,m)
             },100)
         })
+    })
+
+    it('Is connectable by a vuser',async () => {
+
+        const userId = faker.random.uuid()
+
+        const user = new User(userId)
+
+        user.connect()
+
+        await new Promise(resolve => setTimeout(resolve,100))
+
+        user.disconnect()
+
+        await new Promise(resolve => setTimeout(resolve,100))
+
     })
 })
