@@ -37,6 +37,7 @@ app.ws('/', (s, req) => {
     s.on('close',() => {
         if(s.userId===undefined) {
             console.log("unauthenticated user disconnected")
+            return;
         }
 
         decreaseConnections(s.userId)
