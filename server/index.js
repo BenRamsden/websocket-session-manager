@@ -1,5 +1,5 @@
 const {handleEvent} = require("./controller")
-const {HELLO} = require("../shared-helpers/constants")
+const {HELLO,BYE_SUCCESS} = require("../shared-helpers/constants")
 const { increaseConnections, decreaseConnections } = require('./database')
 
 const path = require('path');
@@ -27,6 +27,10 @@ app.ws('/', (s, req) => {
         handleEvent(event,s)
             .then(response => {
                 s.send(JSON.stringify(response))
+
+                if(response.type===BYE_SUCCESS) {
+                    s.close()
+                }
             })
             .catch(error => {
                 throw error
@@ -35,19 +39,7 @@ app.ws('/', (s, req) => {
     })
 
     s.on('close',() => {
-        if(s.userId===undefined) {
-            console.log("unauthenticated user disconnected")
-            return;
-        }
-
-        decreaseConnections(s.userId)
-            .then(user => {
-                console.log(`user ${s.userId} disconnected, connections decreased to ${user.connections}`)
-            })
-            .catch(error => {
-                console.log(`user ${s.userId} disconnected, error decreasing connections`)
-                console.error(error)
-            })
+        console.log(`user ${s.userId} disconnected`)
     })
 });
 

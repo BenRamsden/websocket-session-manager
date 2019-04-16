@@ -1,4 +1,4 @@
-const {AUTHENTICATE, AUTHENTICATE_SUCCESS, CHECK_CONNECTIONS} = require("../shared-helpers/constants")
+const {AUTHENTICATE, AUTHENTICATE_SUCCESS, BYE} = require("../shared-helpers/constants")
 
 const WebSocket = require('ws');
 const { toEvent } = require('../shared-helpers/event')
@@ -37,13 +37,16 @@ class User {
             throw new Error("Cannot disconnect, no connections")
         }
 
-        const s = this.connections[this.connections.length-1]
+        const s = this.connections.pop()
+
+        s.send(JSON.stringify({
+            type: BYE,
+            payload: null
+        }))
 
         s.addEventListener('close', (m) => {
             callback(null,true)
         })
-
-        s.close()
     }
 }
 

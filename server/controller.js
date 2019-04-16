@@ -1,4 +1,4 @@
-const { AUTHENTICATE, AUTHENTICATE_SUCCESS, AUTHENTICATE_FAILURE, ERROR } = require('../shared-helpers/constants')
+const { AUTHENTICATE, AUTHENTICATE_SUCCESS, AUTHENTICATE_FAILURE, ERROR, BYE, BYE_SUCCESS } = require('../shared-helpers/constants')
 const { increaseConnections, decreaseConnections } = require('./database')
 
 const authenticate = async (event,s) => {
@@ -22,10 +22,26 @@ const authenticate = async (event,s) => {
     }
 }
 
+const bye = async (event,s) => {
+    if(s.userId) {
+        await decreaseConnections(s.userId)
+            .then(user => {
+                console.log(`user ${s.userId} said bye, connections decreased to ${user.connections}`)
+            })
+            .catch(error => {
+                console.log(`user ${s.userId} said bye, error decreasing connections`)
+            })
+    }
+
+    return { type:BYE_SUCCESS, payload:null }
+}
+
 const handleEvent = async (event,s) => {
     switch(event.type) {
         case AUTHENTICATE:
             return authenticate(event,s)
+        case BYE:
+            return bye(event,s)
         default:
             return {
                 type:ERROR,

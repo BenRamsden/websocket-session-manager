@@ -47,6 +47,8 @@ describe('Web socket application',() => {
             })
         })
 
+        console.log("user connected")
+
         await new Promise((resolve,reject) => {
             user.disconnect((err,res) => {
                 if(err) return reject(err)
@@ -54,7 +56,7 @@ describe('Web socket application',() => {
             })
         })
 
-        await new Promise(resolve => setTimeout(resolve,100))
+        console.log("user disconnected")
 
     })
 })
