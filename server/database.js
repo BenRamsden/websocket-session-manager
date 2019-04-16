@@ -1,5 +1,6 @@
+const path = require('path')
 const Datastore = require('nedb')
-const User = new Datastore({ filename: './data/users', autoload: true });
+const User = new Datastore({ filename: path.join(__dirname,'data/users'), autoload: true });
 
 const findUser = (userId) => {
     return new Promise((resolve,reject) => {
@@ -50,6 +51,23 @@ const increaseConnections = async (userId) => {
     return user
 }
 
+const decreaseConnections = async (userId) => {
+    let user = await findUser(userId)
+
+    if(user===null) {
+        throw new Error("Cannot decrease connections of non-existent user, user row must be inserted on connect")
+    }
+
+    if(user.connections<=0) {
+        throw new Error(`Cannot decrease connections, as user has ${user.connections}`)
+    }
+
+    user = updateUser(userId,{$inc:{connections:-1}})
+
+    return user
+}
+
 module.exports = {
-    increaseConnections
+    increaseConnections,
+    decreaseConnections
 }
