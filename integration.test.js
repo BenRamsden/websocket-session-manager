@@ -44,21 +44,13 @@ describe('Web socket application',() => {
         let dbUser = await findUser(userId)
         expect(dbUser).toEqual(null)
 
-        await new Promise((resolve,reject) => {
-            user.connect(() => {
-                return resolve()
-            })
-        })
+        await user.connect()
 
         dbUser = await findUser(userId)
         expect(dbUser.id).toEqual(userId)
         expect(dbUser.connections).toEqual(1)
 
-        await new Promise((resolve,reject) => {
-            user.disconnect(() => {
-                return resolve()
-            })
-        })
+        await user.disconnect()
 
         dbUser = await findUser(userId)
         expect(dbUser.id).toEqual(userId)
@@ -71,28 +63,15 @@ describe('Web socket application',() => {
         const user = new User(faker.random.uuid())
 
         for(let i = 0; i < 3; i++) {
-            await new Promise(resolve => {
-                user.connect(() => {
-                    resolve()
-                })
-            })
+            await user.connect()
         }
 
         //Expect AUTHENTICATE_FAILURE to be returned
-        await expect(new Promise((resolve,reject) => {
-            user.connect((err) => {
-                if(err) return reject(err)
-                return resolve()
-            })
-        })).rejects.toEqual("User has reached connection limit, no more connections allowed")
+        await expect(user.connect()).rejects.toEqual("User has reached connection limit, no more connections allowed")
 
         //TODO: Would be better if this was 3, auto close connection if limit is reached
         for(let i = 0; i < 4; i++) {
-            await new Promise(resolve => {
-                user.disconnect(() => {
-                    resolve()
-                })
-            })
+            await user.disconnect()
         }
 
     })
@@ -106,21 +85,13 @@ describe('Web socket application',() => {
         }
 
         const connectPromises = users.map(user => {
-            return new Promise(resolve => {
-                user.connect(() => {
-                    resolve()
-                })
-            })
+            return user.connect()
         })
 
         await Promise.all(connectPromises)
 
         const disconnectPromises = users.map(user => {
-            return new Promise(resolve => {
-                user.disconnect(() => {
-                    resolve()
-                })
-            })
+            return user.disconnect()
         })
 
         await Promise.all(disconnectPromises)

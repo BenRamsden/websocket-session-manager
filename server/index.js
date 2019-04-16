@@ -39,6 +39,7 @@ app.ws('/', (s, req) => {
     })
 
     s.on('close',() => {
+        //TODO: Would be best to handle unexpected connection close, without BYE
         console.log(`user ${s.userId} disconnected`)
     })
 });
