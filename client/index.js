@@ -13,7 +13,6 @@ class User {
         const s = new WebSocket('ws://localhost:3000/');
         s.addEventListener('error', (m) => {
             console.log("error")
-            callback("error")
         })
         s.addEventListener('open',m => {
             s.send(JSON.stringify({
@@ -26,7 +25,7 @@ class User {
             console.log(event)
 
             if(event.type===AUTHENTICATE_SUCCESS) {
-                callback(null,true) //callback for jest
+                callback() //callback for jest
             }
         })
         this.connections.push(s)
@@ -45,7 +44,7 @@ class User {
         }))
 
         s.addEventListener('close', (m) => {
-            callback(null,true)
+            callback()
         })
     }
 }

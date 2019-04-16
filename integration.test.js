@@ -41,22 +41,16 @@ describe('Web socket application',() => {
         const user = new User(userId)
 
         await new Promise((resolve,reject) => {
-            user.connect((err,res) => {
-                if(err) return reject(err)
+            user.connect((res) => {
                 return resolve(res)
             })
         })
-
-        console.log("user connected")
 
         await new Promise((resolve,reject) => {
-            user.disconnect((err,res) => {
-                if(err) return reject(err)
+            user.disconnect((res) => {
                 return resolve(res)
             })
         })
-
-        console.log("user disconnected")
 
     })
 })
