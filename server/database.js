@@ -1,23 +1,43 @@
-const low = require('lowdb')
-const FileSync = require('lowdb/adapters/FileSync')
+const Datastore = require('nedb')
+const User = new Datastore({ filename: './data/users', autoload: true });
 
-const adapter = new FileSync('db.json')
-const db = low(adapter)
+const findUser = (userId) => {
+    return new Promise((resolve,reject) => {
+        User.findOne({ id: userId },(err,doc) => {
+            if(err) return reject(err)
+            return resolve(doc)
+        })
+    })
+}
 
-db.defaults({ users:[] }).write()
+const insertUser = (user) => {
+    return new Promise((resolve,reject) => {
+        User.insert(user,(err) => {
+            if(err) return reject(err)
+            return resolve(user)
+        })
+    })
+}
 
-const increaseConnections = (userId) => {
-    let user = db
-        .get('users')
-        .find({id:userId})
-        .value()
+const updateUser = (userId,update) => {
+    return new Promise((resolve,reject) => {
+        User.update({id:userId},update,{},(err,numReplaced) => {
+            if(err) return reject(err)
 
-    if(user===undefined) {
+            User.findOne({id: userId},(err,user) => {
+                if(err) return reject(err)
+                return resolve(user)
+            })
+        })
+    })
+}
+
+const increaseConnections = async (userId) => {
+    let user = await findUser(userId)
+
+    if(user===null) {
         console.log("creating user",userId)
-        user = db
-            .get('users')
-            .push({id:userId,connections:1})
-            .write()
+        user = await insertUser({ id: userId, connections: 1 })
         return user
     }
 
@@ -25,11 +45,7 @@ const increaseConnections = (userId) => {
         throw new Error("User has reached connection limit, no more connections allowed")
     }
 
-    user = db
-        .get('users')
-        .find({id:userId})
-        .assign({connections:user.connections+1})
-        .write()
+    user = await updateUser(userId,{ $inc:{ connections:1 }})
 
     return user
 }
