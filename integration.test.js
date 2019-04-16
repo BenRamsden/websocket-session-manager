@@ -3,6 +3,7 @@ const app = require('./server/index')
 const { User } = require('./client/index')
 const WebSocket = require('ws');
 const faker = require('faker')
+const { findUser } = require('./server/database')
 
 afterAll(() => {
     app.close() //stop express listening
@@ -40,17 +41,28 @@ describe('Web socket application',() => {
 
         const user = new User(userId)
 
+        let dbUser = await findUser(userId)
+        expect(dbUser).toEqual(null)
+
         await new Promise((resolve,reject) => {
             user.connect((res) => {
                 return resolve(res)
             })
         })
 
+        dbUser = await findUser(userId)
+        expect(dbUser.id).toEqual(userId)
+        expect(dbUser.connections).toEqual(1)
+
         await new Promise((resolve,reject) => {
             user.disconnect((res) => {
                 return resolve(res)
             })
         })
+
+        dbUser = await findUser(userId)
+        expect(dbUser.id).toEqual(userId)
+        expect(dbUser.connections).toEqual(0)
 
     })
 })

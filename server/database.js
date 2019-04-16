@@ -68,6 +68,7 @@ const decreaseConnections = async (userId) => {
 }
 
 module.exports = {
+    findUser,
     increaseConnections,
     decreaseConnections
 }
