@@ -35,6 +35,9 @@ app.ws('/', (s, req) => {
             }))
         }
     })
+    s.on('close',() => {
+        console.log(`user ${s.userId} disconnected`)
+    })
 });
 
 app.listen(3000, () => console.log('listening on http://localhost:3000/'));
