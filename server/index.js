@@ -24,6 +24,13 @@ app.ws('/', (s, req) => {
         console.log(event.type,"event received from user",s.userId)
 
         handleEvent(event,s)
+            .then(response => {
+                s.send(JSON.stringify(response))
+            })
+            .catch(error => {
+                throw error
+            })
+
     })
 
     s.on('close',() => {

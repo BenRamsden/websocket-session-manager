@@ -1,31 +1,32 @@
 const { AUTHENTICATE, AUTHENTICATE_SUCCESS, AUTHENTICATE_FAILURE, ERROR } = require('../shared-helpers/constants')
 const { increaseConnections, decreaseConnections } = require('./database')
 
-const handleEvent = (event,s) => {
-    switch(event.type) {
-        case AUTHENTICATE: {
-            s.userId = event.payload
-            increaseConnections(s.userId)
-                .then(user => {
-                    s.send(JSON.stringify({
-                        type:AUTHENTICATE_SUCCESS,
-                        payload: user
-                    }))
-                })
-                .catch(error => {
-                    s.send(JSON.stringify({
-                        type: AUTHENTICATE_FAILURE,
-                        payload: error.message
-                    }))
-                })
+const authenticate = async (event,s) => {
+    s.userId = event.payload
 
-            break;
+    try {
+        const user = await increaseConnections(s.userId)
+        return {
+            type:AUTHENTICATE_SUCCESS,
+            payload: user
         }
+    } catch(error ) {
+        return {
+            type: AUTHENTICATE_FAILURE,
+            payload: error.message
+        }
+    }
+}
+
+const handleEvent = async (event,s) => {
+    switch(event.type) {
+        case AUTHENTICATE:
+            return authenticate(event,s)
         default:
-            s.send(JSON.stringify({
+            return {
                 type:ERROR,
                 payload:`No such event type ${event.type}`
-            }))
+            }
     }
 }
 
