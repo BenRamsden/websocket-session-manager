@@ -7,6 +7,22 @@ There are 3 components to the software:
 - Server - Powered by express-ws, exposes a websocket API for the user to authenticate to
 - Client - A simple User class that can connect and disconnect to the WebSocket backend. Each user can have multiple connections, and multiple users can be created very easily.
 
+#### Scalability
+
+WebSockets have previously been scaled to 600k idle connections on a M3.xlarge AWS server
+
+https://blog.jayway.com/2015/04/13/600k-concurrent-websocket-connections-on-aws-using-node-js/
+
+Once the initial auth is complete, the purpose of the WebSocket is to determine when / if the user becomes disconnected; by declared means with the "BYE" event, or by loss of connectivity.
+
+The main scaling challenge is the keepalive strategy for the web socket, this must be a lightweight stategy to ensure maximum scalability e.g. ping/pong every 30 minutes. But also frequent enough to ensure availability e.g. ensure users aren't DOSed due to loss of connection.
+
+Because the solution relies on a large number of TCP connections. Dedicated high memory VMs should be used to run this solution, additional VMs should be automatically created when the existing machines reach their networking / memory limits.
+
+E.g. if one server scales to 300k Web Sockets, 7 servers required to serve 2 million people.
+
+To scale the database a managed service such as Azure CosmosDB should be subbed for the proof of concept NeDB.
+
 #### Installation
 
 - Install node (v8.11.4 tested) and npm (v5.6.0 tested)
